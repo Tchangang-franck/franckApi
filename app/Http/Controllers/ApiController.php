@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
+use  App\Http\Requests\ApiRequest;
+use Exception;
+use PhpParser\Node\Stmt\TryCatch;
 
 class ApiController extends Controller
 {
@@ -12,34 +14,43 @@ class ApiController extends Controller
      */
     public function index()
     {
-        // On récupère tous les utilisateurs
-        $users = User::all();
+        try {
+            // On récupère tous les utilisateurs
+            $users = User::all();
 
-        // On retourne les informations des utilisateurs en JSON
-        return response()->json($users);
+            // On retourne les informations des utilisateurs en JSON
+            return response()->json([
+                'status code' => 200,
+                'message' => 'la liste des utilisateurs',
+                'data' => $users
+            ]);
+        } catch (Exception $e) {
+            return response()->json($e);
+        }
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ApiRequest $request)
     {
-        // La validation de données
-        $this->validate($request, [
-            'name' => 'required|max:100',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8'
-        ]);
+        try {
+            // On crée un nouvel utilisateur
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password)
+            ]);
 
-        // On crée un nouvel utilisateur
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
-
-        // On retourne les informations du nouvel utilisateur en JSON
-        return response()->json($user, 201);
+            // On retourne les informations du nouvel utilisateur en JSON
+            return response()->json([
+                'statut code' => 201,
+                'message' => ' utilisateur creer avec succes',
+                'data' => $user
+            ]);
+        } catch (Exception $e) {
+            return response()->json($e);
+        }
     }
 
     /**
@@ -47,40 +58,61 @@ class ApiController extends Controller
      */
     public function show(User $user)
     {
-        // On retourne les informations de l'utilisateur en JSON
-        return response()->json($user);
+
+        try {
+            // On retourne les informations de l'utilisateur en JSON
+            return response()->json([
+                'satus code' => 200,
+                'message' => 'utilisateur recupere avec succes',
+                'data' => $user
+            ]);
+        } catch (Exception $e) {
+            return response()->json($e);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(ApiRequest $request, User $user)
     {
-        // La validation de données
-        $this->validate($request, [
-            'name' => 'required|max:100',
-            'email' => 'required|email',
-        ]);
+        try {
 
-        // On modifie les informations de l'utilisateur
-        $user->update([
-            "name" => $request->name,
-            "email" => $request->email,
-        ]);
+            // On modifie les informations de l'utilisateur
+            $user->update([
+                "name" => $request->name,
+                "email" => $request->email,
+            ]);
 
-        // On retourne la réponse JSON
-        return response()->json(['message'=>'user updated successfully']);
+            // On retourne la réponse JSON
+            return response()->json([
+                'status code' => 200,
+                'message' => 'utilisateur modifier avec succes',
+                'data' => $user
+            ]);
+        } catch (Exception $e) {
+            return response()->json($e);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
-    {
-        // On supprime l'utilisateur
-        $user->delete();
 
+    {
+        try {
+            // On supprime l'utilisateur
+            $user->delete();
+            // informer l'utilisateur qui a bien supprimer 
+            return response()->json([
+                'status' => 200,
+                'message' => 'utilisateur supprimer avec succs',
+            ]);
+        } catch (Exception $e) {
+            return response()->json($e);
+        }
         // On retourne la réponse JSON
-        return response()->json(['message '=>'user delete successfully']);
+
     }
 }
