@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -27,8 +28,23 @@ use App\Http\Controllers\UserController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::middleware('auth:sanctum')->group(function(){
+
+//Route from post
+Route::get('/index', [PostController::class, 'index']);
+Route::get('/show/{post}', [PostController::class, 'show']);
+Route::post('/create_post', [PostController::class, 'store']);
+
+//to have acces to this route if you aunthenticated 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::put('/update', [PostController::class, 'update']);
+    Route::delete('/delete', [PostController::class, 'delete']);
+});
+
+
+//Route from user
+Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', ApiController::class);
 });
+//Route to register an log user 
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
