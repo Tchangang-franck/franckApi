@@ -42,9 +42,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 //Route from user
-Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('users', ApiController::class);
-});
+// Route::middleware('auth:sanctum')->group(function () {
+//     Route::apiResource('users', ApiController::class);
+// });
+Route::apiResource('users', ApiController::class);
 //Route to register an log user 
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
