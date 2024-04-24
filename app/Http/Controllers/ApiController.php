@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class ApiController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource.   
      */
     public function index()
     {
@@ -60,18 +60,16 @@ class ApiController extends Controller
         $this->validate($request, [
             'name' => 'required|max:100',
             'email' => 'required|email',
-            'password' => 'required|min:8'
         ]);
 
         // On modifie les informations de l'utilisateur
         $user->update([
             "name" => $request->name,
             "email" => $request->email,
-            "password" => bcrypt($request->password)
         ]);
 
         // On retourne la réponse JSON
-        return response()->json();
+        return response()->json(['message'=>'user updated successfully']);
     }
 
     /**
@@ -83,6 +81,6 @@ class ApiController extends Controller
         $user->delete();
 
         // On retourne la réponse JSON
-        return response()->json();
+        return response()->json(['message '=>'user delete successfully']);
     }
 }
